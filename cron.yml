@@ -1,0 +1,38 @@
+name: 🔔 Bot Lembrete de Pagamento
+
+on:
+  # Roda todo dia 11 de cada mês às 8h (horário de Brasília = 11h UTC)
+  schedule:
+    - cron: "0 11 11 * *"
+
+  # Permite rodar manualmente pelo GitHub para testar
+  workflow_dispatch:
+
+jobs:
+  enviar-lembrete:
+    name: Enviar lembrete no WhatsApp
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 🟢 Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Instalar dependências
+        run: npm install
+
+      - name: 🤖 Executar bot
+        env:
+          SUPABASE_URL:       ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY:       ${{ secrets.SUPABASE_KEY }}
+          EVOLUTION_API_URL:  ${{ secrets.EVOLUTION_API_URL }}
+          EVOLUTION_API_KEY:  ${{ secrets.EVOLUTION_API_KEY }}
+          EVOLUTION_INSTANCE: ${{ secrets.EVOLUTION_INSTANCE }}
+          GROUP_JID:          ${{ secrets.GROUP_JID }}
+          TABLE_NAME:         ${{ secrets.TABLE_NAME }}
+        run: node index.js
